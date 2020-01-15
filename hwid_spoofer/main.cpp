@@ -41,24 +41,19 @@ NTSTATUS driver_start( )
 
 		const auto fs_device = IoGetDeviceAttachmentBaseRef( current_object );
 
-		if ( !fs_device || fs_device->DeviceType != FILE_DEVICE_DISK )
+		if ( !fs_device || fs_device->DeviceType != FILE_DEVICE_DISK || !fs_device->DeviceExtension )
 			continue;
 
 		const auto raid_extension = static_cast< PRAID_UNIT_EXTENSION >( fs_device->DeviceExtension );
-
-		if ( !raid_extension )
-			continue;
-
 		const auto identity = reinterpret_cast< PSTOR_SCSI_IDENTITY >( std::uintptr_t( raid_extension ) + 0x68 ); // this offset changes per windows build, you figure it out
-		
-		if ( !identity )
-			continue;
-
 		const auto fdo_descriptor = fd_extension->DeviceDescriptor;
 
 		if ( !fdo_descriptor )
+		{
+			ObfDereferenceObject( fs_device );
 			continue;
-
+		}
+		
 		const auto fdo_serial = reinterpret_cast< char* >( fdo_descriptor ) + fdo_descriptor->SerialNumberOffset;
 
 		serializer::randomize( seed, fdo_serial );
