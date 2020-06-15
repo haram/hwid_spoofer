@@ -64,6 +64,8 @@ NTSTATUS driver_start( )
 
 		DiskEnableDisableFailurePrediction( fd_extension, FALSE );
 		RaidUnitRegisterInterfaces( raid_extension );
+		
+		ObfDereferenceObject( fs_device );
 	}
 		
 	return STATUS_SUCCESS;
