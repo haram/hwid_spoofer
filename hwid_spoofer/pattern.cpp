@@ -29,7 +29,7 @@ std::uintptr_t memory::from_pattern( const char* sig, const char* mask )
 			{
 				if ( *mask == 'x' && *data != *sig ) return false;
 			}
-		return ( *mask ) == 0;
+		return true;
 	}( ( std::uint8_t* )( _memory_module.first + i ), ( std::uint8_t* )sig, mask ) )
 		return _memory_module.first + i;
 
